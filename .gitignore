@@ -1,0 +1,31 @@
+# Lokalny katalog roboczy Vivado (tworzony przez create_project.tcl)
+vivado_work/
+*.xpr
+*.runs/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.gen/
+*.sim/
+*.jou
+*.log
+*.str
+*.bak
+.Xil/
+
+# Pliki binarne C++ / RISC-V
+*.o
+*.out
+*.elf
+*.exe
+build/
+
+# NixOS
+result
+result-*
+.direnv/
+flake.lock
+
+# Ignoruj pliki .bit poza dedykowanym folderem bitstreams/
+*.bit
+!bitstreams/*.bit
