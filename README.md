@@ -29,9 +29,9 @@ System dzieli się na dwie współpracujące domeny wewnątrz układu FPGA:
 
 ---
 
-## 2. Struktura Projektu (Co gdzie jest?)
+## 2. Struktura Projektu
 
-Repozytorium zostało zaprojektowane tak, aby działać wieloplatformowo (Windows oraz Linux/NixOS) bez konfliktów ścieżek w plikach projektu Vivado:
+Repozytorium zostało zaprojektowane tak, aby działać wieloplatformowo (Windows oraz Linux) bez konfliktów ścieżek w plikach projektu Vivado:
 
 ```text
 hft/
@@ -44,7 +44,7 @@ hft/
 │                                # Weryfikacja Poziomu 2: wzorcowa książka zleceń i logika decyzyjna
 │                                # do porównywania stanów pośrednich i decyzji końcowych z układem FPGA
 │
-├── exchange_server/             # SYMULATOR SERWERA GIEŁDY (C++ na serwerze Dell Wyse)
+├── exchange_server/             # SYMULATOR SERWERA GIEŁDY (C++)
 │                                # Odtwarzanie plików .pcap z kontrolą tempa oraz odbiór zleceń OUCH
 │
 ├── sw/                          # OPROGRAMOWANIE UKŁADOWE RISC-V (C / Asembler)
@@ -62,11 +62,13 @@ hft/
 ├── vivado_work/                 # LOKALNY FOLDER ROBOCZY VIVADO (Ignorowany przez Git!)
 │                                # Tu powstaje plik .xpr oraz pliki tymczasowe kompilacji i symulacji
 │
-├── flake.nix                    # Deklaracja środowiska deweloperskiego dla systemu NixOS
-└── Makefile                     # Zestaw komend automatyzujących dla systemu Linux / NixOS
+├── docs/                        # Dokumentacja
+│
+├── flake.nix                    # Deklaracja środowiska
+└── Makefile                     # Zestaw komend automatyzujących dla systemu Linux
 ```
 
-_Ważna zasada_: Katalog `vivado_work/` oraz pliki `.xpr` są celowo ignorowane przez .gitignore. Nigdy nie dodawaj ich do repozytorium - projekt Vivado jest generowany lokalnie na każdym komputerze za pomocą skryptu scripts/create_project.tcl.Ważna zasada: Katalog vivado_work/ oraz pliki .xpr są celowo ignorowane przez `.gitignore`. Nigdy nie dodawaj ich do repozytorium – projekt Vivado jest generowany lokalnie na każdym komputerze za pomocą skryptu `scripts/create_project.tcl`.
+_Ważna zasada_: Katalog `vivado_work/` oraz pliki `.xpr` są celowo ignorowane przez .gitignore. Nigdy nie dodawaj ich do repozytorium. Projekt Vivado jest generowany lokalnie na każdym komputerze za pomocą skryptu `scripts/create_project.tcl`.
 
 ## 3. Setup Projektu
 
