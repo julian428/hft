@@ -82,7 +82,7 @@ git clone https://github.com/julian428/hft.git
 cd hft
 ```
 2. Sprawdź ścieżkę do Vivado w skryptach `.bat`:
-Otwórz pliki `scripts\win_create_gui.bat` oraz `scripts\win_build_bit.bat` i upewnij się, że ścieżka wskazuje na Twoją wersję i lokalizację instalacji Vivado (domyślnie `C:\Xilinx\Vivado\2026.1\settings64.bat`).
+Otwórz pliki `scripts\win_create_gui.bat` oraz `scripts\win_build_bit.bat` i upewnij się, że ścieżka wskazuje na Twoją wersję i lokalizację instalacji Vivado (domyślnie `C:\AMDDesignTools\2026.1\Vivado\settings64.bat`).
 
 3. Wygeneruj i otwórz projekt w Vivado GUI:
 Uruchom plik `scripts\win_create_gui.bat`. Skrypt automatycznie utworzy folder `vivado_work\`, zaimportuje wszystkie pliki z `hw/rtl/`, `hw/tb/` oraz `hw/constraints/` i otworzy gotowe okno programu Vivado.
