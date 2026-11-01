@@ -1,0 +1,38 @@
+`timescale 1ns / 1ps
+
+module hft_top (
+    input  logic       sys_clk_50m,  // Pin Y18 (50 MHz)
+    output logic       phy_rst_n,    // Pin N15 (Reset PHY YT8531C)
+    input  logic       rgmii_rxc,    // Pin V19 (125 MHz RX_CLK)
+    input  logic       rgmii_rx_ctl, // Pin R14 (RX_DV)
+    input  logic [3:0] rgmii_rxd,    // Piny P14, R16, R18, T18
+);
+
+    // 1. Wybudzenie układu PHY YT8531C-CA po włączeniu zasilania (~20 ms)
+    logic [19:0] rst_cnt = '0;
+    always_ff @(posedge sys_clk_50m) begin
+        if (rst_cnt != 20'hFFFFF) begin
+            rst_cnt   <= rst_cnt + 1'b1;
+            phy_rst_n <= 1'b0;
+        end else begin
+            phy_rst_n <= 1'b1;
+        end
+    end
+
+    // 2. Instancja naszego pierwszego modułu: Odbiornik RGMII -> AXI4-Stream
+    logic       rx_clk;
+    logic [7:0] rx_axis_tdata;
+    logic       rx_axis_tvalid;
+    logic       rx_axis_tlast;
+
+    eth_mac_rx u_eth_mac_rx (
+        .rgmii_rxc     (rgmii_rxc),
+        .rgmii_rx_ctl  (rgmii_rx_ctl),
+        .rgmii_rxd     (rgmii_rxd),
+        .rx_clk        (rx_clk),
+        .m_axis_tdata  (rx_axis_tdata),
+        .m_axis_tvalid (rx_axis_tvalid),
+        .m_axis_tlast  (rx_axis_tlast)
+    );
+
+endmodule
