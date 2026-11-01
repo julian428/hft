@@ -5,7 +5,7 @@ module hft_top (
     output logic       phy_rst_n,    // Pin N15 (Reset PHY YT8531C)
     input  logic       rgmii_rxc,    // Pin V19 (125 MHz RX_CLK)
     input  logic       rgmii_rx_ctl, // Pin R14 (RX_DV)
-    input  logic [3:0] rgmii_rxd,    // Piny P14, R16, R18, T18
+    input  logic [3:0] rgmii_rxd     // Piny P14, R16, R18, T18
 );
 
     // 1. Wybudzenie układu PHY YT8531C-CA po włączeniu zasilania (~20 ms)
