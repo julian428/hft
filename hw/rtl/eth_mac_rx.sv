@@ -18,12 +18,8 @@ module eth_mac_rx (
 
 		// genialne rozwiązanie zaproponowane przez czata. Omija problem RX_CLK
 		// podłączonego do pinu typu N.
-    IBUFDS #(
-			.DIFF_TERM("FALSE"), // wyłączamy rezystor terminujący aby nie zepsuć impedancji wyjściowej.
-			.IBUF_LOW_PWR("FALSE")
-		) u_ibufds (
-        .I (1'b0),
-        .IB (rgmii_rxc),
+    IBUF u_ibufds (
+        .I (rgmii_rxc),
         .O (rx_clk_local)
     );
 

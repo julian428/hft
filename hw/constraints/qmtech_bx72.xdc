@@ -10,6 +10,8 @@ create_clock -period 20.000 -name sys_clk_50m [get_ports sys_clk_50m]
 set_property PACKAGE_PIN V19 [get_ports rgmii_rxc]
 set_property IOSTANDARD LVCMOS33 [get_ports rgmii_rxc]
 create_clock -period 8.000 -name rgmii_rx_clk [get_ports rgmii_rxc]
+set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets rx_clk_local]
+
 
 # 3. Sygnały sterujące i dane RGMII RX (Bank 14 - LVCMOS33)
 set_property PACKAGE_PIN N15 [get_ports phy_rst_n]
