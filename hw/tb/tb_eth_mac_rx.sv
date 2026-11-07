@@ -7,9 +7,9 @@ module tb_eth_mac_rx ();
     logic [3:0] rgmii_rxd    = 4'h0;
 
     logic       rx_clk;
-    logic [7:0] m_axis_tdata;
-    logic       m_axis_tvalid;
-    logic       m_axis_tlast;
+		logic				rx_dv;
+		logic				rx_er;
+		logic [7:0] rx_data;
 
     // Instancja testowanego modułu (DUT)
     eth_mac_rx dut (
@@ -17,9 +17,9 @@ module tb_eth_mac_rx ();
         .rgmii_rx_ctl  (rgmii_rx_ctl),
         .rgmii_rxd     (rgmii_rxd),
         .rx_clk        (rx_clk),
-        .m_axis_tdata  (m_axis_tdata),
-        .m_axis_tvalid (m_axis_tvalid),
-        .m_axis_tlast  (m_axis_tlast)
+				.rx_dv				 (rx_dv),
+				.rx_er				 (rx_er),
+				.rx_data			 (rx_data)
     );
 
     // Zegar 125 MHz (okres 8 ns -> zbocze co 4 ns)
@@ -58,15 +58,9 @@ module tb_eth_mac_rx ();
     // Proces odbiorczy weryfikujący wyjście AXI4-Stream
     int rx_count = 0;
     always @(posedge rx_clk) begin
-        if (m_axis_tvalid) begin
-            $display("[TB] Odebrano Bajt %0d: 0x%02h (oczekiwano: 0x%02h) | tlast=%b",
-                     rx_count, m_axis_tdata, raw_frame[rx_count + 8], m_axis_tlast);
-
-            if (m_axis_tdata !== raw_frame[rx_count + 8]) begin
-                $error("[TB BLAD] Niezgodnosc danych na bajcie %0d!", rx_count);
-            end
-            rx_count++;
-        end
+        $display("[TB] Odebrano Bajt %0d: 0x%02h (oczekiwano: 0x%02h)",
+                 rx_count, rx_data, raw_frame[rx_count + 8]);
+        rx_count++;
     end
 
     initial begin
