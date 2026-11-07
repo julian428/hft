@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module eth_mac_rx (
-		input  logic				sys_clk_200m; // zegar 200MHz dla IDELAY	
+		input  logic				clk_200m; // zegar 200MHz dla IDELAY	
 		input  logic				sys_rst;
 		
     // Wejście RGMII z układu PHY YT8531C-CA
@@ -48,7 +48,7 @@ module eth_mac_rx (
 
 		IDELAYCTRL u_idelayctrl (
 			.RDY (idelay_ready),
-			.REFCLK (sys_clk_200m),
+			.REFCLK (clk_200m),
 			.RST (sys_rst)
 		);
 

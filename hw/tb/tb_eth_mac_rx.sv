@@ -13,6 +13,7 @@ module tb_eth_mac_rx ();
 
     // Instancja testowanego modułu (DUT)
     eth_mac_rx dut (
+				.clk_200m			 (sys_clk_200m),
         .rgmii_rxc     (rgmii_rxc),
         .rgmii_rx_ctl  (rgmii_rx_ctl),
         .rgmii_rxd     (rgmii_rxd),
@@ -24,6 +25,7 @@ module tb_eth_mac_rx ();
 
     // Zegar 125 MHz (okres 8 ns -> zbocze co 4 ns)
     always #4 rgmii_rxc = ~rgmii_rxc;
+		always #2.5 sys_clk_200m = ~sys_clk_200m;
 
     // Ramka testowa: 8B Preambuła/SFD + 14B Nagłówek Ethernet + 4B Payload = 26 bajtów
     logic [7:0] raw_frame [0:25] = '{

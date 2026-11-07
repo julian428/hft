@@ -2,6 +2,7 @@
 
 module hft_top (
     input  logic       sys_clk_50m,  // Pin Y18 (50 MHz)
+		input	 logic			 sys_clk_200m,
     output logic       phy_rst_n,    // Pin N15 (Reset PHY YT8531C)
     input  logic       rgmii_rxc,    // Pin V19 (125 MHz RX_CLK)
     input  logic       rgmii_rx_ctl, // Pin R14 (RX_DV)
@@ -26,6 +27,7 @@ module hft_top (
     logic       rx_er;
 
     eth_mac_rx u_eth_mac_rx (
+				.clk_200m			 (sys_clk_200m),
         .rgmii_rxc     (rgmii_rxc),
         .rgmii_rx_ctl  (rgmii_rx_ctl),
         .rgmii_rxd     (rgmii_rxd),
