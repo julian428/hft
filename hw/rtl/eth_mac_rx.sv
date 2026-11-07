@@ -114,9 +114,15 @@ module eth_mac_rx (
     endgenerate
 
 		always_ff @(posedge rx_clk) begin
-			rx_dv <= ctl_q1;
-			rx_er <= ctl_q1 ^ ctl_q2;
-			rx_data <= {q2, q1};
+			if(sys_rst || !idelay_ready) begin
+				rx_dv <= 1'b0;
+				rx_er <= 1'b0;
+				rx_data <= 8'h0;
+			end else begin
+				rx_dv <= ctl_q1;
+				rx_er <= ctl_q1 ^ ctl_q2;
+				rx_data <= {q2, q1};
+			end
 		end
 
 endmodule

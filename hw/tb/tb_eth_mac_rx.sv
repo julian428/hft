@@ -1,6 +1,8 @@
 `timescale 1ns / 1ps
 
 module tb_eth_mac_rx ();
+		logic				sys_clk_200m = 1'b0;
+		logic				sys_rst			 = 1'b0;
 
     logic       rgmii_rxc    = 1'b0;
     logic       rgmii_rx_ctl = 1'b0;
@@ -14,6 +16,7 @@ module tb_eth_mac_rx ();
     // Instancja testowanego modułu (DUT)
     eth_mac_rx dut (
 				.clk_200m			 (sys_clk_200m),
+				.sys_rst			 (sys_rst),
         .rgmii_rxc     (rgmii_rxc),
         .rgmii_rx_ctl  (rgmii_rx_ctl),
         .rgmii_rxd     (rgmii_rxd),
