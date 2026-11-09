@@ -65,12 +65,12 @@ module tb_eth_mac_rx ();
     end
 
     initial begin
-        //repeat (10) @(posedge rgmii_rxc);
+        repeat (10) @(posedge rgmii_rxc);
         $display("--- START TESTU ETH_MAC_RX ---");
 
         send_rgmii_frame();
 
-        //repeat (10) @(posedge rgmii_rxc);
+        repeat (10) @(posedge rgmii_rxc);
 
         $display("--- Odebrano %0d bajtow po SFD (0xD5) ---", rx_count);
 
