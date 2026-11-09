@@ -19,19 +19,19 @@ module hft_top (
     end
 
     // 2. Instancja naszego pierwszego modułu: Odbiornik RGMII -> AXI4-Stream
-    logic       rx_clk;
-    logic [7:0] rx_data;
-    logic       rx_dv;
-    logic       rx_er;
+    logic       aclk;
+    logic [7:0] t_data;
+    logic       t_valid;
+    logic       t_last;
 
     eth_mac_rx u_eth_mac_rx (
         .rgmii_rxc     (rgmii_rxc),
         .rgmii_rx_ctl  (rgmii_rx_ctl),
         .rgmii_rxd     (rgmii_rxd),
-        .rx_clk        (rx_clk),
-				.rx_dv				 (rx_dv),
-				.rx_er				 (rx_er),
-				.rx_data			 (rx_data)
+        .aclk        	 (aclk),
+				.t_valid			 (tt_valid),
+				.t_data			 	 (t_data),
+				.t_last				 (t_last)
     );
 
 endmodule
