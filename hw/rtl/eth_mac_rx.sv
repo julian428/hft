@@ -38,7 +38,7 @@ module eth_mac_rx (
     logic       ctl_q1, ctl_q2;
 
     IDDR #(
-        .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED"),
+        .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")
     ) iddr_ctl (
         .Q1 (ctl_q1),
         .Q2 (ctl_q2),
@@ -55,7 +55,7 @@ module eth_mac_rx (
     generate
         for (i = 0; i < 4; i++) begin : gen_iddr_data
             IDDR #(
-                .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED"),
+                .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")
             ) iddr_d (
                 .Q1 (q1[i]), // Dolny półbajt (bity 3:0)
                 .Q2 (q2[i]), // Górny półbajt (bity 7:4)
