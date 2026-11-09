@@ -30,7 +30,7 @@ module hft_top (
         .rgmii_rx_ctl  (rgmii_rx_ctl),
         .rgmii_rxd     (rgmii_rxd),
         .aclk        	 (aclk),
-				.t_valid			 (tt_valid),
+				.t_valid			 (t_valid),
 				.t_data			 	 (t_data),
 				.t_last				 (t_last)
     );
