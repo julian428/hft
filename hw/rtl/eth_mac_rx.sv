@@ -81,7 +81,7 @@ module eth_mac_rx (
 		always_ff @(posedge rx_clk) begin
 			rx_dv <= ctl_q1;
 			rx_er <= ctl_q1 ^ ctl_q2;
-			rx_data <= {q2, q1};
+			rx_data <= {q1, q2};
 		end
 
 endmodule
