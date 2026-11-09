@@ -41,12 +41,12 @@ module tb_eth_mac_rx ();
     // Zadanie nadające bajty w standardzie RGMII DDR (4 bity na posedge, 4 bity na negedge)
     task automatic send_rgmii_frame();
         for (int i = 0; i < 26; i++) begin
-            @(posedge rgmii_rxc);
+            @(negedge rgmii_rxc);
 						#2 // opóźnienie aby przesunąć zmianę danych na środek taktu
             rgmii_rx_ctl <= 1'b1;
             rgmii_rxd    <= raw_frame[i][3:0]; // Dolne 4 bity
 
-            @(negedge rgmii_rxc);
+            @(posedge rgmii_rxc);
 						#2 // tutaj to samo
             rgmii_rx_ctl <= 1'b1;
             rgmii_rxd    <= raw_frame[i][7:4]; // Górne 4 bity
