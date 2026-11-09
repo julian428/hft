@@ -1,9 +1,6 @@
 `timescale 1ns / 1ps
 
 module tb_eth_mac_rx ();
-		logic				sys_clk_200m = 1'b0;
-		logic				sys_rst			 = 1'b0;
-
     logic       rgmii_rxc    = 1'b0;
     logic       rgmii_rx_ctl = 1'b0;
     logic [3:0] rgmii_rxd    = 4'h0;
@@ -15,8 +12,6 @@ module tb_eth_mac_rx ();
 
     // Instancja testowanego modułu (DUT)
     eth_mac_rx dut (
-				.clk_200m			 (sys_clk_200m),
-				.sys_rst			 (sys_rst),
         .rgmii_rxc     (rgmii_rxc),
         .rgmii_rx_ctl  (rgmii_rx_ctl),
         .rgmii_rxd     (rgmii_rxd),
@@ -28,7 +23,6 @@ module tb_eth_mac_rx ();
 
     // Zegar 125 MHz (okres 8 ns -> zbocze co 4 ns)
     always #4 rgmii_rxc = ~rgmii_rxc;
-		always #2.5 sys_clk_200m = ~sys_clk_200m;
 
     // Ramka testowa: 8B Preambuła/SFD + 14B Nagłówek Ethernet + 4B Payload = 26 bajtów
     logic [7:0] raw_frame [0:25] = '{

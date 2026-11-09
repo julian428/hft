@@ -7,19 +7,6 @@ module hft_top (
     input  logic       rgmii_rx_ctl, // Pin R14 (RX_DV)
     input  logic [3:0] rgmii_rxd     // Piny P14, R16, R18, T18
 );
-
-		logic sys_cllk_200m;
-		logic local_reset;
-
-		clk_wiz_0 u_clock_gen (
-			.clk_in1 (sys_clk_50m),
-			.clk_out1 (sys_clk_200m),
-			.resetn		(1'b1),
-			.locked (mmcm_locked)
-		);
-
-		assign local_reset = !mmcm_locked;
-
     // 1. Wybudzenie układu PHY YT8531C-CA po włączeniu zasilania (~20 ms)
     logic [19:0] rst_cnt = '0;
     always_ff @(posedge sys_clk_50m) begin
@@ -38,8 +25,6 @@ module hft_top (
     logic       rx_er;
 
     eth_mac_rx u_eth_mac_rx (
-				.clk_200m			 (sys_clk_200m),
-				.sys_rst			 (local_reset),
         .rgmii_rxc     (rgmii_rxc),
         .rgmii_rx_ctl  (rgmii_rx_ctl),
         .rgmii_rxd     (rgmii_rxd),
