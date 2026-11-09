@@ -71,7 +71,7 @@ module eth_mac_rx (
 		localparam SFD_BYTE = 8'hD5;
 		always_ff @(posedge aclk) begin
 			t_data <= {q2, q1};
-			if((t_data == SFD_BYTE || t_valid) && (ctl_q1 && (ctl_q1 ^ ctl_q2))) begin
+			if((t_data == SFD_BYTE || t_valid) && (ctl_q1 && ~(ctl_q1 ^ ctl_q2))) begin
 				t_valid <= 1'b1;
 			end else begin
 				t_valid <= 1'b0;
