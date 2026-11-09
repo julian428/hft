@@ -16,8 +16,6 @@ module eth_mac_rx (
 		logic aclk_local;
 		logic aclk_bufio;
 
-		// genialne rozwiązanie zaproponowane przez czata. Omija problem RX_CLK
-		// podłączonego do pinu typu N.
     IBUF u_ibufds (
         .I (rgmii_rxc),
         .O (aclk_local)
@@ -41,9 +39,6 @@ module eth_mac_rx (
 
     IDDR #(
         .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED"),
-				.INIT_Q1 (1'b0),
-				.INIT_Q2 (1'b0),
-				.SRTYPE ("SYNC")
     ) iddr_ctl (
         .Q1 (ctl_q1),
         .Q2 (ctl_q2),
@@ -61,9 +56,6 @@ module eth_mac_rx (
         for (i = 0; i < 4; i++) begin : gen_iddr_data
             IDDR #(
                 .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED"),
-								.INIT_Q1 (1'b0),
-								.INIT_Q2 (1'b0),
-								.SRTYPE ("SYNC")
             ) iddr_d (
                 .Q1 (q1[i]), // Dolny półbajt (bity 3:0)
                 .Q2 (q2[i]), // Górny półbajt (bity 7:4)
@@ -76,10 +68,9 @@ module eth_mac_rx (
         end
     endgenerate
 
-		always_ff @(posedge aclk) t_data <= {q2, q1};
-
 		localparam SFD_BYTE = 8'hD5;
 		always_ff @(posedge aclk) begin
+			t_data <= {q2, q1};
 			if((t_data == SFD_BYTE || t_valid) && (ctl_q1 && (ctl_q1 ^ ctl_q2))) begin
 				t_valid <= 1'b1;
 			end else begin
