@@ -25,7 +25,7 @@ module eth_mac_rx (
 		logic clk_fb_unbuf;
 		logic clk_fb;
 
-		logic mmcm_locked = 1'b0;
+		logic mmcm_locked;
 
 		// Trzymam się tonącej brzytwy
 
@@ -43,7 +43,7 @@ module eth_mac_rx (
 			.CLKOUT0 (aclk_unbuf),
 			.LOCKED (mmcm_locked),
 			.PWRDWN (1'b0),
-			.RST (~areset_n)
+			.RST (mmcm_locked)
 		);
 
 		BUFG u_bufg_fb (
