@@ -84,7 +84,7 @@ module eth_mac_rx (
 				byte_count <= byte_count + 1;
 
 				if (byte_count < 6) begin // tutaj sprawdzam adres MAC.
-					if(t_data != MAC[byte_count]) t_valid <= 1;
+					if(t_data == MAC[byte_count]) t_valid <= 1;
 					else t_valid <= 0;
 				end else if (byte_count < 14) begin // tutaj sprawdzam typ nagłówka IP, czy będzie v4 czy v6.
 					if(t_data == ETH[byte_count - 12]) t_valid <= 1;
