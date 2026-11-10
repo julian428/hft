@@ -10,39 +10,60 @@ module eth_mac_rx (
     output logic       aclk, // wyjściowy zbuforowany zegar 125MHz dla kolejnych modułów, pewnie FIFO.
 		output logic			 t_valid,  // data valid
 		output logic [7:0] t_data, // dane
-		output logic			 t_last
+		output logic			 t_last,
+		input	 logic			 areset_n
 );
 
 		logic aclk_local;
-		logic aclk_bufio;
 
     IBUF u_ibufds (
         .I (rgmii_rxc),
         .O (aclk_local)
     );
 
-		BUFIO u_bufio (
-			.I (aclk_local),
-			.O (aclk_bufio)
+		logic aclk_unbuf;
+		logic clk_fb_unbuf;
+		logic clk_fb;
+
+		logic mmcm_locked = 1'b0;
+
+		// Trzymam się tonącej brzytwy
+
+		MMCME2_BASE #(
+			.BANDWIDTH ("OPTIMIZED"),
+			.CLKIN1_PERIOD (8.0),
+			.CLKFBOUT_MULT_F (8),
+			.CLKOUT0_DIVIDE_F (8),
+			.CLKOUT0_PHASE (0.0),
+			.DIVCLK_DIVIDE (1)
+		) u_mmcm_rx (
+			.CLKIN1 (aclk_local),
+			.CLKFBIN (clk_fb),
+			.CLKFBOUT (clk_fb_unbuf),
+			.CLKOUT0 (aclk_unbuf),
+			.LOCKED (mmcm_locked),
+			.PWRDWN (1'b0),
+			.RST (~areset_n)
 		);
 
-		BUFR #(
-			.BUFR_DIVIDE("BYPASS")
-		) u_bufr (
-			.I (aclk_local),
-			.O (aclk), // BUFR jest do logiki więc dlatego od niego przypisujemy główny zegar.
-			.CE (1'b1),
-			.CLR (1'b0)
+		BUFG u_bufg_fb (
+			.I (clk_fb_unbuf),
+			.O (clk_fb)
 		);
 
-    logic       ctl_dv, ctl_q2;
+		BUFG u_bufg_aclk (
+			.I (aclk_unbuf),
+			.O (aclk)
+		);
+
+    logic ctl_dv, ctl_q2;
 
     IDDR #(
         .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")
     ) iddr_ctl (
         .Q1 (ctl_dv),
         .Q2 (ctl_q2),
-        .C  (aclk_bufio), // taktowanie z dedykowanego zegara do IO. Podobno tak jest lepiej niż z aclk, który jest do logiki.
+        .C  (aclk),
         .CE (1'b1),
         .D  (rgmii_rx_ctl),
         .R  (1'b0),
@@ -63,7 +84,7 @@ module eth_mac_rx (
             ) iddr_d (
                 .Q1 (q1[i]), // Dolny półbajt (bity 3:0)
                 .Q2 (q2[i]), // Górny półbajt (bity 7:4)
-                .C  (aclk_bufio), // ten sam powód co wyżej
+                .C  (aclk),
                 .CE (1'b1),
                 .D  (rgmii_rxd[i]),
                 .R  (1'b0),
@@ -76,11 +97,12 @@ module eth_mac_rx (
 		localparam [7:0] MAC [0:5] = '{8'h02, 8'h00, 8'h00, 8'h00, 8'h00, 8'h01}; // taki sobie wymyśliłem adres MAC, że będziemy mieć.
 		localparam [7:0] ETH [0:1] = '{8'h08, 8'h00}; 														// 0x0800 oznacza IPv4.
 
-		logic byte_count = 11'd0;
-		always_ff @(posedge aclk or negedge ctl_ok) begin
+		logic [10:0] byte_count = 11'd0;
+		always_ff @(posedge aclk) begin
+			t_last <= 1'b0; // chwilowe
 			t_data <= {q2, q1};
 			
-			if(ctl_ok && t_data == SFD) t_valid <= 1'b1;
+			if(!mmcm_locked || !areset_n)		 t_valid <= 1'b0;
 			else if(ctl_ok && t_valid) begin
 				byte_count <= byte_count + 1'd1;
 
@@ -89,7 +111,8 @@ module eth_mac_rx (
 					11'd12, 11'd13: 													 t_valid <= t_data == ETH[byte_count - 12]; // tutaj sprawdzam typ nagłówka IP, czy będzie v4 czy v6.
 					default:																	 t_valid <= 1'b1;
 				endcase
-			end else begin
+			end else if(ctl_ok && t_data == SFD) t_valid <= 1'b1;
+			else begin
 				t_valid <= 1'b0;
 				byte_count <= 11'd0;
 			end

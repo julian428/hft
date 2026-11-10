@@ -18,7 +18,8 @@ module tb_eth_mac_rx ();
         .aclk        	 (aclk),
 				.t_valid			 (t_valid),
 				.t_data			 	 (t_data),
-				.t_last				 (t_last)
+				.t_last				 (t_last),
+				.areset_n			 (1'b1)
     );
 
     // Zegar 125 MHz (okres 8 ns -> zbocze co 4 ns)
@@ -67,6 +68,7 @@ module tb_eth_mac_rx ();
     end
 
     initial begin
+				wait (dut.mmcm_locked == 1'b1);
         repeat (10) @(posedge rgmii_rxc);
         $display("--- START TESTU ETH_MAC_RX ---");
 
