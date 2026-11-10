@@ -80,16 +80,17 @@ module eth_mac_rx (
 		always_ff @(posedge aclk or negedge ctl_ok) begin
 			t_data <= {q2, q1};
 			
-			if(ctl_ok && (t_data == SFD || t_valid)) begin
+			if(ctl_ok && t_data == SFD) t_valid <= 1'b1;
+			else if(ctl_ok && t_valid) begin
 				byte_count <= byte_count + 1'd1;
 
 				case(byte_count)
 					11'd0, 	11'd1, 11'd2, 11'd3, 11'd4, 11'd5: t_valid <= t_data == MAC[byte_count]; 			// tutaj sprawdzam adres MAC.
 					11'd12, 11'd13: 													 t_valid <= t_data == ETH[byte_count - 12]; // tutaj sprawdzam typ nagłówka IP, czy będzie v4 czy v6.
-					default:																	 t_valid <= 1;
+					default:																	 t_valid <= 1'b1;
 				endcase
 			end else begin
-				t_valid <= 0;
+				t_valid <= 1'b0;
 				byte_count <= 11'd0;
 			end
 		end
