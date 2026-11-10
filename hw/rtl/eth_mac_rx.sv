@@ -35,12 +35,12 @@ module eth_mac_rx (
 			.CLR (1'b0)
 		);
 
-    logic       ctl_q1, ctl_q2;
+    logic       ctl_dv, ctl_q2;
 
     IDDR #(
         .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")
     ) iddr_ctl (
-        .Q1 (ctl_q1),
+        .Q1 (ctl_dv),
         .Q2 (ctl_q2),
         .C  (aclk_bufio), // taktowanie z dedykowanego zegara do IO. Podobno tak jest lepiej niż z aclk, który jest do logiki.
         .CE (1'b1),
@@ -48,6 +48,10 @@ module eth_mac_rx (
         .R  (1'b0),
         .S  (1'b0)
     );
+		
+		logic ctl_er, ctl_ok;
+		assign ctl_er = ctl_dv ^ ctl_q2;
+		assign ctl_ok = ctl_dv && ~ctl_er;
 		
     logic [3:0] q1, q2;
 
@@ -68,13 +72,27 @@ module eth_mac_rx (
         end
     endgenerate
 
-		localparam SFD_BYTE = 8'hD5;
-		always_ff @(posedge aclk) begin
+		localparam [7:0] SFD 			 =   8'hD5;
+		localparam [7:0] MAC [0:5] = '{8'h02, 8'h00, 8'h00, 8'h00, 8'h00, 8'h01}; // taki sobie wymyśliłem adres MAC, że będziemy mieć.
+		localparam [7:0] ETH [0:1] = '{8'h08, 8'h00}; 														// 0x0800 oznacza IPv4.
+
+		logic byte_count = 11'd0;
+		always_ff @(posedge aclk or negedge ctl_ok) begin
 			t_data <= {q2, q1};
-			if((t_data == SFD_BYTE || t_valid) && (ctl_q1 && ~(ctl_q1 ^ ctl_q2))) begin
-				t_valid <= 1'b1;
+			
+			if(ctl_ok && (t_data == SFD_BYTE || t_valid)) begin
+				byte_count <= byte_count + 1;
+
+				if (byte_count < 6) begin // tutaj sprawdzam adres MAC.
+					if(t_data != MAC[byte_count]) t_valid <= 1;
+					else t_valid <= 0;
+				end else if (byte_count < 14) begin // tutaj sprawdzam typ nagłówka IP, czy będzie v4 czy v6.
+					if(t_data == ETH_TYPE[byte_count - 12]) t_valid <= 1;
+					else t_valid <= 0;
+				end else t_valid <= 1;
 			end else begin
-				t_valid <= 1'b0;
+				t_valid <= 0;
+				byte_count <= 0;
 			end
 		end
 
