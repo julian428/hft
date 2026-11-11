@@ -38,6 +38,6 @@ module hft_top (
 
 		always_ff @(posedge aclk) begin
 			if(t_valid && phy_rst_n) led <= ~led;
-			else 										 led <= 1'b0;
+			else 										 led <= led;
 		end
 endmodule
