@@ -36,8 +36,12 @@ module hft_top (
 				.areset_n			 (phy_rst_n)
     );
 
+		logic [15:0] led_cnt = 16'h0;
 		always_ff @(posedge aclk) begin
-			if(t_valid && phy_rst_n) led <= ~led;
-			else 										 led <= led;
+			if(t_valid && phy_rst_n)  led_cnt <= 16'hFFFF;
+			else 										 	led <= led;
+
+			if(led_cnt != 0) led <= 1'b1;
+			else led <= 1'b0;
 		end
 endmodule
