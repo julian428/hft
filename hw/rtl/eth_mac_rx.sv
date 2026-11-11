@@ -43,7 +43,7 @@ module eth_mac_rx (
 			.CLKOUT0 (aclk_unbuf),
 			.LOCKED (mmcm_locked),
 			.PWRDWN (1'b0),
-			.RST (mmcm_locked)
+			.RST (~areset_n)
 		);
 
 		BUFG u_bufg_fb (

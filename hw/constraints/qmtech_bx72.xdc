@@ -1,10 +1,6 @@
 # Kompresja pliku bitstream
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 
-set_clock_groups -asynchronous
--group [get_clocks sys_clk_50m]
--group [get_clocks -include_generated_clocks rgmii_rx_clk]
-
 # Zegar systemowy 50 MHz (U4)
 set_property PACKAGE_PIN Y18 [get_ports sys_clk_50m]
 set_property IOSTANDARD LVCMOS33 [get_ports sys_clk_50m]
@@ -15,6 +11,8 @@ set_property PACKAGE_PIN V19 [get_ports rgmii_rxc]
 set_property IOSTANDARD LVCMOS33 [get_ports rgmii_rxc]
 create_clock -period 8.000 -name rgmii_rx_clk [get_ports rgmii_rxc]
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets -of_objects [get_ports rgmii_rxc]]
+
+set_clock_groups -asynchronous -group [get_clocks sys_clk_50m] -group [get_clocks -include_generated_clocks rgmii_rx_clk]
 
 # Led'y do testów
 set_property PACKAGE_PIN E16 [get_ports led]
