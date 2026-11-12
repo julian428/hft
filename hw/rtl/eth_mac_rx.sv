@@ -27,8 +27,6 @@ module eth_mac_rx (
 
 		logic mmcm_locked;
 
-		// Trzymam się tonącej brzytwy
-
 		MMCME2_BASE #(
 			.BANDWIDTH ("OPTIMIZED"),
 			.CLKIN1_PERIOD (8.0),
@@ -70,9 +68,10 @@ module eth_mac_rx (
         .S  (1'b0)
     );
 		
-		logic ctl_er, ctl_ok;
-		assign ctl_er = ctl_dv ^ ctl_q2;
-		assign ctl_ok = ctl_dv && ~ctl_er;
+		logic 	ctl_er, ctl_ok;
+		assign 	ctl_er = ctl_dv ^ ctl_q2;
+		assign 	ctl_ok = ctl_dv && ~ctl_er;
+		assign	t_last = t_valid && ~ctl_ok;
 		
     logic [3:0] q1, q2;
 
@@ -93,29 +92,13 @@ module eth_mac_rx (
         end
     endgenerate
 
-		localparam [7:0] SFD 			 =   8'hD5;
-		localparam [7:0] MAC [0:5] = '{8'h02, 8'h00, 8'h00, 8'h00, 8'h00, 8'h01}; // taki sobie wymyśliłem adres MAC, że będziemy mieć.
-		localparam [7:0] ETH [0:1] = '{8'h08, 8'h00}; 														// 0x0800 oznacza IPv4.
-
-		logic [10:0] byte_count = 11'd0;
+		localparam [7:0] SFD = 8'hD5;
 		always_ff @(posedge aclk) begin
-			t_last <= 1'b0; // chwilowe
 			t_data <= {q2, q1};
 			
-			if(!mmcm_locked || !areset_n)		 t_valid <= 1'b0;
-			else if(ctl_ok && t_valid) begin
-				byte_count <= byte_count + 1'd1;
-
-				case(byte_count)
-					11'd0, 	11'd1, 11'd2, 11'd3, 11'd4, 11'd5: t_valid <= t_data == MAC[byte_count]; 			// tutaj sprawdzam adres MAC.
-					11'd12, 11'd13: 													 t_valid <= t_data == ETH[byte_count - 12]; // tutaj sprawdzam typ nagłówka IP, czy będzie v4 czy v6.
-					default:																	 t_valid <= 1'b1;
-				endcase
-			end else if(ctl_ok && t_data == SFD) t_valid <= 1'b1;
-			else begin
-				t_valid <= 1'b0;
-				byte_count <= 11'd0;
-			end
+			if(!mmcm_locked || !areset_n)		 							t_valid <= 1'b0;
+			else if(ctl_ok && (t_data == SFD || t_valid)) t_valid <= 1'b1;
+			else 																					t_valid <= 1'b0;
 		end
 
 endmodule
