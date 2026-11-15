@@ -7,7 +7,8 @@ module hft_top (
     input  logic       rgmii_rx_ctl, // Pin R14 (RX_DV)
     input  logic [3:0] rgmii_rxd,     // Piny P14, R16, R18, T18
 
-		output logic			 led = 1'b0
+		output logic			 led_1 = 1'b0,
+		output logic             led_2 = 1'b0
 );
     // Wybudzenie układu PHY YT8531C-CA po włączeniu zasilania (~20 ms)
     logic [19:0] rst_cnt = '0;
@@ -36,14 +37,23 @@ module hft_top (
 				.areset_n			 (phy_rst_n)
     );
 
-		logic [27:0] led_cnt = 28'h0;
+		logic [27:0] led_1_cnt = 28'h0;
+		logic [27:0] led_2_cnt = 28'h0;
 		always_ff @(posedge aclk) begin
-			if(t_valid && phy_rst_n)  led_cnt <= 28'hFFFFFFF;
-			else 										 	led <= led;
+			if(t_valid && phy_rst_n)  led_1_cnt <= 28'hFFFFFFF;
+			else 										 	led_1 <= led_1;
+			
+			if(t_last && phy_rst_n)   led_2_cnt <= 28'd100000000;
+			else led_2 <= led_2;
 
-			if(led_cnt != 0) begin
-				led <= 1'b1;
-				led_cnt <= led_cnt - 1'b1;
-			end else led <= 1'b0;
+			if(led_1_cnt != 0) begin
+				led_1 <= 1'b1;
+				led_1_cnt <= led_1_cnt - 1'b1;
+			end else led_1 <= 1'b0;
+			
+			if(led_2_cnt != 0) begin
+			    led_2 <= 1'b1;
+			    led_1_cnt <= led_2_cnt - 1'b1;
+			end else led_2 <= 1'b0;
 		end
 endmodule
