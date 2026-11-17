@@ -16,7 +16,7 @@ module eth_mac_rx (
 
 		logic aclk_local;
 
-    IBUF u_ibufds (
+    IBUF u_ibuf (
         .I (rgmii_rxc),
         .O (aclk_local)
     );

@@ -44,7 +44,7 @@ module hft_top (
 			else 										 	led_1 <= led_1;
 			
 			if(t_last && phy_rst_n)   led_2_cnt <= 28'd100000000;
-			else led_2 <= led_2;
+			else 											led_2 <= led_2;
 
 			if(led_1_cnt != 0) begin
 				led_1 <= 1'b1;
@@ -53,7 +53,7 @@ module hft_top (
 			
 			if(led_2_cnt != 0) begin
 			    led_2 <= 1'b1;
-			    led_1_cnt <= led_2_cnt - 1'b1;
+			    led_2_cnt <= led_2_cnt - 1'b1;
 			end else led_2 <= 1'b0;
 		end
 endmodule
