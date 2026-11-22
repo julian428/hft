@@ -14,11 +14,11 @@ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets -of_objects [get_ports rgmii_
 
 set_clock_groups -asynchronous -group [get_clocks sys_clk_50m] -group [get_clocks -include_generated_clocks rgmii_rx_clk]
 
-# Led'y do testów
-set_property PACKAGE_PIN E16 [get_ports led_1]
-set_property IOSTANDARD LVCMOS33 [get_ports led_1]
-set_property PACKAGE_PIN F16 [get_ports led_2]
-set_property IOSTANDARD LVCMOS33 [get_ports led_2]
+# kanały analizatora do testów
+set_property PACKAGE_PIN F13 [get_ports CH1]
+set_property IOSTANDARD LVCMOS33 [get_ports CH1]
+set_property PACKAGE_PIN E13 [get_ports CH2]
+set_property IOSTANDARD LVCMOS33 [get_ports CH2]
 
 # Sygnały sterujące i dane RGMII RX (Bank 14 - LVCMOS33)
 set_property PACKAGE_PIN N15 [get_ports phy_rst_n]
