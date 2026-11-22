@@ -5,14 +5,14 @@ module tb_digital_analyzer ();
 	logic				t_valid = 1'b0;
 	logic [7:0] t_data = '0;
 
-	logic CH1,
-	logic CH2,
-	logic CH3,
-	logic CH4,
-	logic CH5,
-	logic CH6,
-	logic CH7,
-	logic CH8,
+	logic CH1 = 1'b0;
+	logic CH2 = 1'b0;
+	logic CH3 = 1'b0;
+	logic CH4 = 1'b0;
+	logic CH5 = 1'b0;
+	logic CH6 = 1'b0;
+	logic CH7 = 1'b0;
+	logic CH8 = 1'b0;
 
   // Instancja testowanego modułu (DUT)
   digital_analyzer dut (

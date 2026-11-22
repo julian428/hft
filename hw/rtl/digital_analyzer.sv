@@ -26,12 +26,10 @@ always_ff @(posedge aclk) begin
 	if(slow_pulse_cnt == 0) begin
 		slow_pulse <= 1'b1;
 		slow_pulse_cnt <= 5'd24;
-	end else
+	end else begin
 		slow_pulse_cnt <= slow_pulse_cnt - 1'b1;
 		slow_pulse <= 1'b0;
 	end
-	
-	slow_aclk_last <= slow_aclk;
 end
 
 logic [7:0] mem [MEMORY_SIZE-1:0];
@@ -60,7 +58,7 @@ always_ff @(posedge aclk) begin
 	end
 
 	// reset
-	if(wr_ptr == rd_ptr) begin
+	if(~t_ready && (wr_ptr == rd_ptr)) begin
 		wr_ptr <= '0;
 		rd_ptr <= '0;
 	end
