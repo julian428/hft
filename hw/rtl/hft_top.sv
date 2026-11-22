@@ -7,53 +7,43 @@ module hft_top (
     input  logic       rgmii_rx_ctl, // Pin R14 (RX_DV)
     input  logic [3:0] rgmii_rxd,     // Piny P14, R16, R18, T18
 
-		output logic			 led_1 = 1'b0,
-		output logic             led_2 = 1'b0
+		output logic			 CH1 = 1'b0,
+		output logic       CH2 = 1'b0
 );
-    // Wybudzenie układu PHY YT8531C-CA po włączeniu zasilania (~20 ms)
-    logic [19:0] rst_cnt = '0;
-    always_ff @(posedge sys_clk_50m) begin
-        if (rst_cnt != 20'hFFFFF) begin
-            rst_cnt   <= rst_cnt + 1'b1;
-            phy_rst_n <= 1'b0;
-        end else begin
-            phy_rst_n <= 1'b1;
-        end
-    end
+// Wybudzenie układu PHY YT8531C-CA po włączeniu zasilania (~20 ms)
+logic [19:0] rst_cnt = '0;
+always_ff @(posedge sys_clk_50m) begin
+  if (rst_cnt != 20'hFFFFF) begin
+    rst_cnt   <= rst_cnt + 1'b1;
+    phy_rst_n <= 1'b0;
+  end else begin
+    phy_rst_n <= 1'b1;
+  end
+end
 
-    logic       aclk;
-    logic [7:0] t_data;
-    logic       t_valid;
-    logic       t_last;
+logic       aclk;
+logic [7:0] t_data;
+logic       t_valid;
+logic       t_last;
 
-    eth_mac_rx u_eth_mac_rx (
-        .rgmii_rxc     (rgmii_rxc),
-        .rgmii_rx_ctl  (rgmii_rx_ctl),
-        .rgmii_rxd     (rgmii_rxd),
-        .aclk        	 (aclk),
-				.t_valid			 (t_valid),
-				.t_data			 	 (t_data),
-				.t_last				 (t_last),
-				.areset_n			 (phy_rst_n)
-    );
+eth_mac_rx u_eth_mac_rx (
+  .rgmii_rxc     (rgmii_rxc),
+  .rgmii_rx_ctl  (rgmii_rx_ctl),
+  .rgmii_rxd     (rgmii_rxd),
+  .aclk        	 (aclk),
+  .t_valid			 (t_valid),
+	.t_data			 	 (t_data),
+	.t_last				 (t_last),
+	.areset_n			 (phy_rst_n)
+);
 
-		logic [27:0] led_1_cnt = 28'h0;
-		logic [27:0] led_2_cnt = 28'h0;
-		always_ff @(posedge aclk) begin
-			if(t_valid && phy_rst_n)  led_1_cnt <= 28'hFFFFFFF;
-			else 										 	led_1 <= led_1;
-			
-			if(t_last && phy_rst_n)   led_2_cnt <= 28'd100000000;
-			else 											led_2 <= led_2;
+digital_analyzer u_digital_analyzer (
+	.aclk			(aclk),
+	.t_data		({t_valid, t_last, 6'b0}),
+	.t_valid	(t_valid),
 
-			if(led_1_cnt != 0) begin
-				led_1 <= 1'b1;
-				led_1_cnt <= led_1_cnt - 1'b1;
-			end else led_1 <= 1'b0;
-			
-			if(led_2_cnt != 0) begin
-			    led_2 <= 1'b1;
-			    led_2_cnt <= led_2_cnt - 1'b1;
-			end else led_2 <= 1'b0;
-		end
+	.CH1			(CH1),
+	.CH2			(CH2)
+);	
+		
 endmodule
