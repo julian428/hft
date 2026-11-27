@@ -6,6 +6,7 @@ module digital_analyzer #(
 	input logic aclk,
 	input logic [7:0] t_data = 8'b0,
 	input logic t_valid,
+	input logic areset_n = 1'b0,
 	
 	output logic CH1,
 	output logic CH2,
@@ -32,36 +33,16 @@ always_ff @(posedge aclk) begin
 	end
 end
 
-logic [7:0] mem [MEMORY_SIZE-1:0];
-logic [$clog2(MEMORY_SIZE)-1:0] wr_ptr = '0, rd_ptr = '0;
+fifo #(
+	.MEMORY_SIZE(MEMORY_SIZE)
+) u_fifo (
+	.aclk (aclk),
+	.areset_n (areset_n),
+	.t_data (t_data),
+	.t_valid (t_valid),
+	.t_read (slow_pulse),
 
-assign t_ready = wr_ptr < MEMORY_SIZE;
-
-always_ff @(posedge aclk) begin
-	// odczyt
-	if(slow_pulse && (wr_ptr != rd_ptr)) begin
-			rd_ptr <= rd_ptr + 1'b1;
-			CH1 <= mem[rd_ptr][7];
-			CH2 <= mem[rd_ptr][6];
-			CH3 <= mem[rd_ptr][5];
-			CH4 <= mem[rd_ptr][4];
-			CH5 <= mem[rd_ptr][3];
-			CH6 <= mem[rd_ptr][2];
-			CH7 <= mem[rd_ptr][1];
-			CH8 <= mem[rd_ptr][0];
-	end
-
-	// zapis
-	if(t_ready && t_valid) begin
-		mem[wr_ptr] <= t_data;
-		wr_ptr <= wr_ptr + 1'b1;
-	end
-
-	// reset
-	if(~t_ready && (wr_ptr == rd_ptr)) begin
-		wr_ptr <= '0;
-		rd_ptr <= '0;
-	end
-end
+	.o_data ({CH8, CH7, CH6, CH5, CH4, CH3, CH2, CH1})
+);
 
 endmodule

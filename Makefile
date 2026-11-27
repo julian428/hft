@@ -4,7 +4,7 @@ BITSTREAM ?= bitstreams/hft_top.bit
 
 # 1. Tworzy i otwiera projekt w GUI Vivado (Linux)
 vivado-gui:
-	vivado -source scripts/create_project.tcl &
+	vivado -source scripts/create_project.tcl > /dev/null &
 
 # 2. Kompiluje bitstream w trybie bezokienkowym (Linux)
 bitstream:

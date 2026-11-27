@@ -10,6 +10,7 @@ module hft_top (
 		output logic			 CH1 = 1'b0,
 		output logic       CH2 = 1'b0
 );
+
 // Wybudzenie układu PHY YT8531C-CA po włączeniu zasilania (~20 ms)
 logic [19:0] rst_cnt = '0;
 always_ff @(posedge sys_clk_50m) begin
@@ -37,10 +38,11 @@ eth_mac_rx u_eth_mac_rx (
 	.areset_n			 (phy_rst_n)
 );
 
-digital_analyzer u_digital_analyzer (
+digital_analyzer #(.MEMORY_SIZE(2048)) u_digital_analyzer (
 	.aclk			(aclk),
-	.t_data		({t_valid, t_last, 6'b0}),
+	.t_data		({6'b0, t_valid, t_last}),
 	.t_valid	(t_valid),
+	.areset_n(phy_rst_n),
 
 	.CH1			(CH1),
 	.CH2			(CH2)
