@@ -1,7 +1,7 @@
 -------------------------------------
-| Tool Version : Vivado v.2026.1
-| Date         : Sun Nov 15 17:58:41 2026
-| Host         : DESKTOP-UEUG4T8
+| Tool Version : Vivado v.2026.2
+| Date         : Fri Nov 27 12:51:01 2026
+| Host         : julianM
 | Design       : design_1
 | Device       : xc7a100t-fgg484-2--
 -------------------------------------
