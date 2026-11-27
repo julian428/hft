@@ -20,12 +20,9 @@ vivado_work/
 *.exe
 build/
 
-# NixOS
-result
-result-*
-.direnv/
-flake.lock
-
 # Ignoruj pliki .bit poza dedykowanym folderem bitstreams/
 *.bit
 !bitstreams/*.bit
+
+# pliki przebiegów
+*.sr
