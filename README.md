@@ -53,9 +53,10 @@ hft/
 ├── bitstreams/                  # GOTOWE PLIKI KONFIGURACYJNE FPGA (.bit)
 │                                # Skompresowane pliki .bit gotowe do wgrania na płytkę Artix-7
 │
-├── scripts/                     # SKRYPTY AUTOMATYZUJĄCE (Tcl / Batch)
+├── scripts/                     # SKRYPTY AUTOMATYZUJĄCE (Tcl / Batch / Shell)
 │   ├── create_project.tcl       # Generuje lokalny projekt Vivado w folderze ./vivado_work/
 │   ├── build_bitstream.tcl      # Kompiluje projekt bez otwierania GUI prosto do ./bitstreams/
+│   ├── digital_analyzer.sh      # Pomocniczy skrypt dla analizatora stanów logicznych (sigrok-cli)
 │   ├── win_create_gui.bat       # Skrypt dla Windows: tworzy i uruchamia projekt w Vivado GUI
 │   └── win_build_bit.bat        # Skrypt dla Windows: kompiluje plik .bit w trybie bezokienkowym
 │
@@ -64,7 +65,6 @@ hft/
 │
 ├── docs/                        # Dokumentacja
 │
-├── flake.nix                    # Deklaracja środowiska
 └── Makefile                     # Zestaw komend automatyzujących dla systemu Linux
 ```
 
@@ -81,8 +81,8 @@ Do pracy z częścią sprzętową wymagany jest pakiet Xilinx Vivado ML Standard
 git clone https://github.com/julian428/hft.git
 cd hft
 ```
-2. Sprawdź ścieżkę do Vivado w skryptach `.bat`:
-Otwórz pliki `scripts\win_create_gui.bat` oraz `scripts\win_build_bit.bat` i upewnij się, że ścieżka wskazuje na Twoją wersję i lokalizację instalacji Vivado (domyślnie `C:\AMDDesignTools\2026.1\Vivado\settings64.bat`).
+2. Ścieżka do Vivado:
+Skrypty `scripts\win_create_gui.bat` oraz `scripts\win_build_bit.bat` automatycznie wykrywają `vivado` w `PATH` lub najnowszą instalację w `C:\AMDDesignTools\` / `C:\Xilinx\Vivado\`. W przypadku niestandardowej lokalizacji ustaw zmienną środowiskową `VIVADO_SETTINGS` na ścieżkę do `settings64.bat`.
 
 3. Wygeneruj i otwórz projekt w Vivado GUI:
 Uruchom plik `scripts\win_create_gui.bat`. Skrypt automatycznie utworzy folder `vivado_work\`, zaimportuje wszystkie pliki z `hw/rtl/`, `hw/tb/` oraz `hw/constraints/` i otworzy gotowe okno programu Vivado.
@@ -95,10 +95,7 @@ git clone https://github.com/julian428/hft.git
 cd hft
 ```
 
-2. Uruchom środowisko z narzędziami:
-```Bash
-nix develop
-```
+2. Załaduj środowisko Vivado (np. `source /tools/Xilinx/Vivado/<wersja>/settings64.sh`, jeśli `vivado` nie jest w `PATH`).
 
 3. Wygeneruj i otwórz projekt w Vivado GUI:
 ```Bash
@@ -109,9 +106,9 @@ make vivado-gui
 
 ### 1. Otwieranie projektu
 
-- Pierwsze uruchomienie (lub po pobraniu nowych plików przez git pull): Uruchom `scripts\win_create_gui.bat` (Windows) lub `make vivado-gui` (Linux). Skrypt na czysto odtworzy projekt `vivado_work/hft_fpga.xpr` ze wszystkimi aktualnymi plikami z repozytorium.
+- Pierwsze uruchomienie (lub po pobraniu nowych plików przez git pull): Uruchom `scripts\win_create_gui.bat` (Windows) lub `make vivado-gui` (Linux). Skrypt na czysto odtworzy projekt `vivado_work/hft.xpr` ze wszystkimi aktualnymi plikami z repozytorium.
 
-- Kolejne uruchomienia: Możesz otwierać utworzony wcześniej plik `vivado_work/hft_fpga.xpr` bezpośrednio w programie Vivado.
+- Kolejne uruchomienia: Możesz otwierać utworzony wcześniej plik `vivado_work/hft.xpr` bezpośrednio w programie Vivado.
 
 ### 2. Edycja i dodawanie nowych plików sprzętowych (.sv, .xdc)
 
@@ -141,7 +138,7 @@ Masz do wyboru dwie metody:
         Skrypt automatycznie przeprowadzi syntezę oraz implementację i zapisze gotowy, skompresowany plik w bitstreams/hft_top.bit.
 
 - Z poziomu GUI Vivado:
-    Kliknij Generate Bitstream w lewym dolnym rogu programu, a po zakończeniu skopiuj wygenerowany plik `.bit` z `vivado_work/hft_fpga.runs/impl_1/` do katalogu `bitstreams/`.
+    Kliknij Generate Bitstream w lewym dolnym rogu programu, a po zakończeniu skopiuj wygenerowany plik `.bit` z `vivado_work/hft.runs/impl_1/` do katalogu `bitstreams/`.
 
 ### 5. Wgrywanie układu na płytkę FPGA (Serwer laboratoryjny)
 

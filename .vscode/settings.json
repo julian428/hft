@@ -1,0 +1,5 @@
+{
+    "verible.arguments": [
+        "--flagfile=.verible-format"
+    ]
+}
