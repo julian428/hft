@@ -1,104 +1,104 @@
 `timescale 1ns / 1ps
 
 module eth_mac_rx (
-    // Wejście RGMII z układu PHY YT8531C-CA
-    input  logic       rgmii_rxc,     // Zegar 125 MHz z PHY (Pin V19)
-    input  logic       rgmii_rx_ctl,  // Sygnał RX_DV (Pin R14)
-    input  logic [3:0] rgmii_rxd,     // Dane DDR 4-bit (Piny P14, R16, R18, T18)
+  // Wejście RGMII z układu PHY YT8531C-CA
+  input logic       rgmii_rxc,     // Zegar 125 MHz z PHY (Pin V19)
+  input logic       rgmii_rx_ctl,  // Sygnał RX_DV (Pin R14)
+  input logic [3:0] rgmii_rxd,     // Dane DDR 4-bit (Piny P14, R16, R18, T18)
 
-		// Są takie śmieszne nazwy bo jednak bedziemy używać AXI4-Stream
-    output logic       aclk, // wyjściowy zbuforowany zegar 125MHz dla kolejnych modułów, pewnie FIFO.
-		output logic			 t_valid,  // data valid
-		output logic [7:0] t_data, // dane
-		output logic			 t_last,
-		input	 logic			 areset_n
+  // Są takie śmieszne nazwy bo jednak bedziemy używać AXI4-Stream
+  output logic aclk,  // wyjściowy zbuforowany zegar 125MHz dla kolejnych modułów, pewnie FIFO.
+  output logic t_valid,  // data valid
+  output logic [7:0] t_data,  // dane
+  output logic t_last,
+  input logic areset_n
 );
 
-		logic aclk_local;
+  logic aclk_local;
 
-    IBUF u_ibuf (
-        .I (rgmii_rxc),
-        .O (aclk_local)
-    );
+  IBUF u_ibuf (
+    .I(rgmii_rxc),
+    .O(aclk_local)
+  );
 
-		logic aclk_unbuf;
-		logic clk_fb_unbuf;
-		logic clk_fb;
+  logic aclk_unbuf;
+  logic clk_fb_unbuf;
+  logic clk_fb;
 
-		logic mmcm_locked;
+  logic mmcm_locked;
 
-		MMCME2_BASE #(
-			.BANDWIDTH ("OPTIMIZED"),
-			.CLKIN1_PERIOD (8.0),
-			.CLKFBOUT_MULT_F (8),
-			.CLKOUT0_DIVIDE_F (8),
-			.CLKOUT0_PHASE (0.0),
-			.DIVCLK_DIVIDE (1)
-		) u_mmcm_rx (
-			.CLKIN1 (aclk_local),
-			.CLKFBIN (clk_fb),
-			.CLKFBOUT (clk_fb_unbuf),
-			.CLKOUT0 (aclk_unbuf),
-			.LOCKED (mmcm_locked),
-			.PWRDWN (1'b0),
-			.RST (~areset_n)
-		);
+  MMCME2_BASE #(
+    .BANDWIDTH       ("OPTIMIZED"),
+    .CLKIN1_PERIOD   (8.0),
+    .CLKFBOUT_MULT_F (8),
+    .CLKOUT0_DIVIDE_F(8),
+    .CLKOUT0_PHASE   (0.0),
+    .DIVCLK_DIVIDE   (1)
+  ) u_mmcm_rx (
+    .CLKIN1  (aclk_local),
+    .CLKFBIN (clk_fb),
+    .CLKFBOUT(clk_fb_unbuf),
+    .CLKOUT0 (aclk_unbuf),
+    .LOCKED  (mmcm_locked),
+    .PWRDWN  (1'b0),
+    .RST     (~areset_n)
+  );
 
-		BUFG u_bufg_fb (
-			.I (clk_fb_unbuf),
-			.O (clk_fb)
-		);
+  BUFG u_bufg_fb (
+    .I(clk_fb_unbuf),
+    .O(clk_fb)
+  );
 
-		BUFG u_bufg_aclk (
-			.I (aclk_unbuf),
-			.O (aclk)
-		);
+  BUFG u_bufg_aclk (
+    .I(aclk_unbuf),
+    .O(aclk)
+  );
 
-    logic ctl_dv, ctl_q2;
+  logic ctl_dv, ctl_q2;
 
-    IDDR #(
-        .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")
-    ) iddr_ctl (
-        .Q1 (ctl_dv),
-        .Q2 (ctl_q2),
-        .C  (aclk),
-        .CE (1'b1),
-        .D  (rgmii_rx_ctl),
-        .R  (1'b0),
-        .S  (1'b0)
-    );
-		
-		logic 	ctl_er, ctl_ok;
-		assign 	ctl_er = ctl_dv ^ ctl_q2;
-		assign 	ctl_ok = ctl_dv && ~ctl_er;
-		assign	t_last = t_valid && ~ctl_ok;
-		
-    logic [3:0] q1, q2;
+  IDDR #(
+    .DDR_CLK_EDGE("SAME_EDGE_PIPELINED")
+  ) iddr_ctl (
+    .Q1(ctl_dv),
+    .Q2(ctl_q2),
+    .C (aclk),
+    .CE(1'b1),
+    .D (rgmii_rx_ctl),
+    .R (1'b0),
+    .S (1'b0)
+  );
 
-    genvar i;
-    generate
-        for (i = 0; i < 4; i++) begin : gen_iddr_data
-            IDDR #(
-                .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")
-            ) iddr_d (
-                .Q1 (q1[i]), // Dolny półbajt (bity 3:0)
-                .Q2 (q2[i]), // Górny półbajt (bity 7:4)
-                .C  (aclk),
-                .CE (1'b1),
-                .D  (rgmii_rxd[i]),
-                .R  (1'b0),
-                .S  (1'b0)
-            );
-        end
-    endgenerate
+  logic ctl_er, ctl_ok;
+  assign ctl_er = ctl_dv ^ ctl_q2;
+  assign ctl_ok = ctl_dv && ~ctl_er;
+  assign t_last = t_valid && ~ctl_ok;
 
-		localparam [7:0] SFD = 8'hD5;
-		always_ff @(posedge aclk) begin
-			t_data <= {q2, q1};
-			
-			if(!mmcm_locked || !areset_n)		 							t_valid <= 1'b0;
-			else if(ctl_ok && (t_data == SFD || t_valid)) t_valid <= 1'b1;
-			else 																					t_valid <= 1'b0;
-		end
+  logic [3:0] q1, q2;
+
+  genvar i;
+  generate
+    for (i = 0; i < 4; i++) begin : gen_iddr_data
+      IDDR #(
+        .DDR_CLK_EDGE("SAME_EDGE_PIPELINED")
+      ) iddr_d (
+        .Q1(q1[i]),         // Dolny półbajt (bity 3:0)
+        .Q2(q2[i]),         // Górny półbajt (bity 7:4)
+        .C (aclk),
+        .CE(1'b1),
+        .D (rgmii_rxd[i]),
+        .R (1'b0),
+        .S (1'b0)
+      );
+    end
+  endgenerate
+
+  localparam [7:0] SFD = 8'hD5;
+  always_ff @(posedge aclk) begin
+    t_data <= {q2, q1};
+
+    if (!mmcm_locked || !areset_n) t_valid <= 1'b0;
+    else if (ctl_ok && (t_data == SFD || t_valid)) t_valid <= 1'b1;
+    else t_valid <= 1'b0;
+  end
 
 endmodule
