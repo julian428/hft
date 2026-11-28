@@ -1,0 +1,24 @@
+# Konfiguracja verible-verilog-format (uzywana przez: --flagfile=.verible-format)
+--indentation_spaces=2
+--wrap_spaces=4
+--column_limit=100
+--line_terminator=LF
+
+--port_declarations_indentation=indent
+--port_declarations_alignment=align
+--formal_parameters_indentation=indent
+--formal_parameters_alignment=align
+--named_port_indentation=indent
+--named_port_alignment=align
+--named_parameter_indentation=indent
+--named_parameter_alignment=align
+
+--assignment_statement_alignment=align
+--case_items_alignment=align
+--module_net_variable_alignment=align
+--parameter_declaration_alignment=align
+--struct_union_members_alignment=align
+--enum_assignment_statement_alignment=align
+
+--try_wrap_long_lines=true
+--compact_indexing_and_selections=true
