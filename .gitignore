@@ -11,7 +11,15 @@ vivado_work/
 *.log
 *.str
 *.bak
+*.pb
+*.wdb
+*.dcp
 .Xil/
+xsim.dir/
+clockInfo.txt
+vivado_featurestore.json
+webtalk*
+usage_statistics_webtalk.*
 
 # Pliki binarne C++ / RISC-V
 *.o
@@ -24,5 +32,6 @@ build/
 *.bit
 !bitstreams/*.bit
 
-# pliki przebiegów
+# Pliki przebiegów
 *.sr
+*.vcd
