@@ -14,6 +14,6 @@ bitstream:
 flash:
 	openFPGALoader -c digilent_hs3 $(BITSTREAM)
 
-# 4. Czyści lokalne pliki robocze Vivado
+# 4. Czyści lokalne pliki robocze i artefakty Vivado/XSim
 clean:
-	rm -rf vivado_work *.jou *.log *.str .Xil
+	rm -rf vivado_work *.jou *.log *.str *.pb *.wdb *.dcp .Xil xsim.dir clockInfo.txt vivado_featurestore.json webtalk* usage_statistics_webtalk.*
