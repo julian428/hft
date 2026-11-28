@@ -16,7 +16,7 @@
 --assignment_statement_alignment=align
 --case_items_alignment=align
 --module_net_variable_alignment=align
---parameter_declaration_alignment=align
+# --parameter_declaration_alignment=align # nie działa u mnie.
 --struct_union_members_alignment=align
 --enum_assignment_statement_alignment=align
 

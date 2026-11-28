@@ -25,40 +25,20 @@ module tb_eth_mac_rx ();
   // Zegar 125 MHz (okres 8 ns -> zbocze co 4 ns)
   always #4 rgmii_rxc = ~rgmii_rxc;
 
-  // Ramka testowa: 8B Preambuła/SFD + 14B Nagłówek Ethernet + 4B Payload = 26 bajtów
+  // verilog_format: off // Ramka testowa: 8B Preambuła/SFD + 14B Nagłówek Ethernet + 4B Payload = 26 bajtów
   logic [7:0] raw_frame[0:25] = '{
       // Preambuła (7B) + SFD (1B) -> powinny zostać ODRZUCONE przez moduł!
-      8'h55,
-      8'h55,
-      8'h55,
-      8'h55,
-      8'h55,
-      8'h55,
-      8'h55,
-      8'hD5,
+      8'h55, 8'h55, 8'h55, 8'h55, 8'h55, 8'h55, 8'h55, 8'hD5,
       // Bajty 0..5: Destination MAC
-      8'h02,
-      8'h00,
-      8'h00,
-      8'h00,
-      8'h00,
-      8'h01,
+      8'h02, 8'h00, 8'h00, 8'h00, 8'h00, 8'h01,
       // Bajty 6..11: Source MAC
-      8'h00,
-      8'h0A,
-      8'hCD,
-      8'h00,
-      8'h0B,
-      8'h49,
+      8'h00, 8'h0A, 8'hCD, 8'h00, 8'h0B, 8'h49,
       // Bajty 12..13: EtherType (0x0800 = IPv4)
-      8'h08,
-      8'h00,
+      8'h08, 8'h00,
       // Bajty 14..17: Przykładowy payload (4 bajty)
-      8'hDE,
-      8'hAD,
-      8'hBE,
-      8'hEF
+      8'hDE, 8'hAD, 8'hBE, 8'hEF
   };
+  // verilog_format: on
 
   // Zadanie nadające bajty w standardzie RGMII DDR (4 bity na posedge, 4 bity na negedge)
   task automatic send_rgmii_frame();

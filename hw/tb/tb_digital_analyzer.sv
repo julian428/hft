@@ -32,24 +32,12 @@ module tb_digital_analyzer ();
 
   always #4 aclk = ~aclk;
 
+  // verilog_format: off
   logic [7:0] frame[0:15] = '{
-      8'h01,
-      8'h02,
-      8'h03,
-      8'h04,
-      8'h05,
-      8'h06,
-      8'h07,
-      8'h08,
-      8'h09,
-      8'h0A,
-      8'h0B,
-      8'h0C,
-      8'h0D,
-      8'h0E,
-      8'h0F,
-      8'h10
+      8'h01, 8'h02, 8'h03, 8'h04, 8'h05, 8'h06, 8'h07, 8'h08,
+      8'h09, 8'h0A, 8'h0B, 8'h0C, 8'h0D, 8'h0E, 8'h0F, 8'h10
   };
+  // verilog_format: on
 
   initial begin
     repeat (10) @(posedge aclk);
